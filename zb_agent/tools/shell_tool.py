@@ -5,9 +5,9 @@ import re
 
 from .base import BaseTool
 
-# 危险命令黑名单正则
+# 危险命令黑名单正则（包含 chmod 八进制变体和 SSRF 攻击模式）
 _DANGEROUS_PATTERNS = re.compile(
-    r"\b(rm\s+-rf|mkfs|dd\s+if|chmod\s+777|curl\s+.*\|.*sh|wget\s+.*\|.*sh|:(){ :|:& };:)\b",
+    r"\b(rm\s+-rf|mkfs|dd\s+if=|chmod\s*[0-7]*7[0-7]{2}|curl\s+.*\|.*sh|wget\s+.*\|.*sh|:(){ :|:& };:)\b",
     re.IGNORECASE,
 )
 

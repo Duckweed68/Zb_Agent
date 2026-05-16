@@ -5,16 +5,25 @@ from pathlib import Path
 
 from .base import BaseTool
 
-# 禁止访问的危险目录前缀
+# 禁止访问的危险目录前缀（系统目录和敏感凭证目录）
 _BLOCKED_PREFIXES = ("/etc", "/sys", "/proc", "/dev", "/boot", "/root")
+
+# 禁止访问的用户敏感目录（相对 home 目录）
+_BLOCKED_HOME_SUBDIRS = (".ssh", ".aws", ".gnupg", ".config/gcloud", ".kube")
 
 
 def _check_safe_path(path: str) -> None:
-    """检查路径安全性，阻止访问系统敏感目录"""
+    """检查路径安全性，阻止访问系统敏感目录和用户凭证目录"""
     resolved = str(Path(path).resolve())
     for prefix in _BLOCKED_PREFIXES:
         if resolved.startswith(prefix):
             raise PermissionError(f"禁止访问受保护目录: {path}")
+    # 阻止访问用户 home 目录下的敏感凭证目录
+    home = os.path.expanduser("~")
+    for subdir in _BLOCKED_HOME_SUBDIRS:
+        blocked_home = str(Path(home) / subdir)
+        if resolved.startswith(blocked_home):
+            raise PermissionError(f"禁止访问用户凭证目录: {path}")
 
 
 class FileTool(BaseTool):

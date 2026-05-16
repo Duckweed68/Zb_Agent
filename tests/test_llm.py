@@ -78,3 +78,12 @@ def test_openai_provider_init_with_fake_key():
     provider = OpenAIProvider(model="gpt-4o-mini", api_key="sk-fake-key-for-testing")
     assert provider.model == "gpt-4o-mini"
     assert provider.temperature == 0.7
+
+
+def test_openai_provider_raises_without_key(monkeypatch):
+    """验证未提供 API key 时抛出 ValueError"""
+    import os
+    from zb_agent.llm.openai_provider import OpenAIProvider
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="OPENAI_API_KEY"):
+        OpenAIProvider(model="gpt-4o-mini")

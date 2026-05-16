@@ -18,10 +18,15 @@ class OpenAIProvider(BaseLLMProvider):
     ) -> None:
         from openai import AsyncOpenAI  # 延迟导入，避免无 key 时崩溃
 
+        resolved_key = api_key or os.environ.get("OPENAI_API_KEY", "")
+        if not resolved_key:
+            raise ValueError(
+                "未提供 OpenAI API key。请通过参数 api_key 传入，或设置环境变量 OPENAI_API_KEY。"
+            )
         self.model = model
         self.temperature = temperature
         self._client = AsyncOpenAI(
-            api_key=api_key or os.environ.get("OPENAI_API_KEY", ""),
+            api_key=resolved_key,
             base_url=base_url,
         )
 

@@ -91,6 +91,16 @@ async def test_shell_tool_dangerous_command():
 
 
 @pytest.mark.asyncio
+async def test_shell_tool_chmod_777_blocked():
+    """测试 chmod 777 和八进制变体被阻止"""
+    st = ShellTool()
+    with pytest.raises(PermissionError):
+        await st.execute(cmd="chmod 777 /tmp/test")
+    with pytest.raises(PermissionError):
+        await st.execute(cmd="chmod 0777 /tmp/test")
+
+
+@pytest.mark.asyncio
 async def test_shell_tool_pwd():
     st = ShellTool()
     result = await st.execute(cmd="pwd")
@@ -141,3 +151,27 @@ async def test_web_tool_truncation():
         result = await wt.execute(url="https://example.com")
     assert "截断" in result
     assert len(result) < len(long_content)
+
+
+@pytest.mark.asyncio
+async def test_web_tool_ssrf_localhost_blocked():
+    """测试 SSRF 防护：localhost 被阻止"""
+    wt = WebTool()
+    with pytest.raises(PermissionError):
+        await wt.execute(url="http://localhost:8080/secret")
+
+
+@pytest.mark.asyncio
+async def test_web_tool_ssrf_metadata_blocked():
+    """测试 SSRF 防护：AWS 元数据服务 169.254.169.254 被阻止"""
+    wt = WebTool()
+    with pytest.raises(PermissionError):
+        await wt.execute(url="http://169.254.169.254/latest/meta-data/")
+
+
+@pytest.mark.asyncio
+async def test_web_tool_invalid_scheme_blocked():
+    """测试非 HTTP/HTTPS 协议被阻止"""
+    wt = WebTool()
+    with pytest.raises(ValueError):
+        await wt.execute(url="ftp://example.com/file")
