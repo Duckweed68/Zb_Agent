@@ -28,7 +28,7 @@ def _get_agent():
     config = AgentConfig()
     memory = ShortTermMemory()
 
-    if os.environ.get("OPENAI_API_KEY"):
+    if os.environ.get("OPENAI_API_KEY", "").strip():
         llm = OpenAIProvider(model=config.model)
     else:
         console.print("[yellow]⚠ 未检测到 OPENAI_API_KEY，使用 Mock Provider[/yellow]")

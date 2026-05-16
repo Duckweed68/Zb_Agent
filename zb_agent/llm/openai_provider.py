@@ -40,6 +40,8 @@ class OpenAIProvider(BaseLLMProvider):
             kwargs["tools"] = tools
 
         response = await self._client.chat.completions.create(**kwargs)
+        if not response.choices:
+            return ""
         return response.choices[0].message.content or ""
 
 
