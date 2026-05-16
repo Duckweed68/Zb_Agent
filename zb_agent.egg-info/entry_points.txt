@@ -1,0 +1,2 @@
+[console_scripts]
+zb-agent = zb_agent.cli:main

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zb_agent"
+version = "0.1.0"
+description = "数字员工 AI Agent 系统 — Digital Employee AI Agent System"
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.0",
+    "httpx>=0.25",
+    "click>=8.0",
+    "pydantic>=2.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+
+[project.scripts]
+zb-agent = "zb_agent.cli:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["zb_agent*"]
